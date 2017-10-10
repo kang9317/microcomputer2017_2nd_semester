@@ -1,6 +1,6 @@
 /*
 ### malloc test ###
-name : main.c
+name : malloc.c
 date : 2017-10-10
 author : 강정학
 proj : 100바이트를 할당받아서 여기에 알파벳 문자를 순서대로 저장한후에 화면에 출력하기
