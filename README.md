@@ -1,2 +1,2 @@
 # microcomputer2017_2nd_semester
-Upload "microcomputer" report source code
+Jung-Hak's Upload "microcomputer" report source code
