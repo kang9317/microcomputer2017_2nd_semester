@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+import time
+from subprocess import call
+call("sudo pigpiod", shell = True)
+print("pigpiod start...")
+call("sudo ds4drv &", shell = True)
+print("ds4drv start...")
+import serial
+
+from pygame import mixer
+from threading import Thread
+con = serial.Serial('/dev/ttyAMA0', 19200, timeout=0.05)
+
+#, write_timeout = 20
+####comment binary
+#x 0000 default
+#0 0001 sr-sensor
+#1 0010 spray
+#2 0011 power on
+#3 0100 manual mode on
+#4 0101 manual mode off
+#5 1000 back
+#6 1001 straight_go
+#7 1010 left
+#8 1011 right
+#9 1100 sleft
+#10 1101 sright
+#11 1110 180'left
+#12 1111 180'right
+
+b_code = [b'0001',                  b'0002',                b'0003',                    b'0004',                b'0005',            b'0006']
+p_name = ['./save/manual_man.mp3',  './save/auto_man.mp3',  './save/diffuse_man.mp3',   './save/beep-07.mp3',   './save/spray.mp3', "./save/restart_man.mp3"]
+#r_code = [b'b',                   b'c',                 b'd',                     b'e',                 b'f']
+
+#con.write(b'1001')
+
+def play_mp3(b_code_n, p_name_n):
+    try:
+        mixer.init()
+        mixer.music.load("{0}".format(p_name_n))
+        mixer.music.play()
+        #player.quit()
+        if b_code_n == b'0001':
+            con.write(b'b')
+        elif b_code_n == b'0002':
+            con.write(b'c')
+        elif b_code_n == b'0003':
+            con.write(b'd')
+        elif b_code_n == b'0004':
+            con.write(b'e')
+        elif b_code_n == b'0005':
+            con.write(b'f')
+        elif b_code_n == b'0006':
+            con.write(b'g')
+
+        #print("send")
+        #time.sleep(0.625)
+        #con.write(b'0000')
+        #print("init")
+        #time.sleep(0.625)
+    except:
+        pass
+def connect_atmega128(res1,b_code_n, p_name_n):
+    try:
+        if res1 == b_code_n:
+            th = Thread(target=play_mp3(b_code_n, p_name_n))
+            th.demon = True
+            th.start()
+            #play_mp3(p_name_n)
+    except KeyboardInterrupt:
+        con.close()
+        
+def main():
+    
+    mixer.init()
+    mixer.music.load("./save/start_man.mp3")
+    mixer.music.play()
+    
+    #a
+    con.write(b'a')
+    time.sleep(13)
+
+    while(True):
+        res1 = con.readline()
+        print(res1)
+        if res1 == b_code[0]:
+            connect_atmega128(res1, b_code[0],p_name[0])
+        elif res1 == b_code[1]:
+            connect_atmega128(res1, b_code[1],p_name[1])
+        elif res1 == b_code[2]:
+            connect_atmega128(res1, b_code[2],p_name[2])
+        elif res1 == b_code[3]:
+            connect_atmega128(res1, b_code[3],p_name[3])
+        elif res1 == b_code[4]:
+            connect_atmega128(res1, b_code[4],p_name[4])
+        elif res1 == b_code[5]:
+            connect_atmega128(res1, b_code[5],p_name[5])
+"""
+        elif res1 == b_code[6]:
+            connect_atmega128(res1, b_code[6],p_name[6])
+        elif res1 == b_code[7]:
+            connect_atmega128(res1, b_code[7],p_name[7])
+        elif res1 == b_code[8]:
+            connect_atmega128(res1, b_code[8],p_name[8])
+        elif res1 == b_code[9]:
+            connect_atmega128(res1, b_code[9],p_name[9])
+        elif res1 == b_code[10]:
+            connect_atmega128(res1, b_code[10],p_name[10])
+        elif res1 == b_code[11]:
+            connect_atmega128(res1, b_code[11],p_name[11])
+        elif res1 == b_code[12]:
+            connect_atmega128(res1, b_code[12],p_name[12])
+"""
+
+main()
